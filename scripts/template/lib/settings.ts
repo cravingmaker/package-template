@@ -417,7 +417,7 @@ const actionsSettings = (base: string): readonly Setting[] => {
 };
 
 /**
- * The shared settings of `repository`. A template repository leaves out the variable of the release app, because its workflows never release.
+ * The shared settings of `repository`. A template repository leaves out the release app, because its workflows never release.
  */
 const sharedSettings = (
   repository: Readonly<Repository>,
@@ -429,7 +429,14 @@ const sharedSettings = (
     ...actionsSettings(base),
     featureSetting("Immutable releases", `${base}/immutable-releases`),
     rulesetSetting(base, protectMain),
-    rulesetSetting(base, protectReleaseTags),
+    rulesetSetting(
+      base,
+      // GitHub accepts the release app as a bypass actor only where it is installed. A template has no app and never releases, so nobody creates its tags.
+      repository.isTemplate
+        ? // eslint-disable-next-line @typescript-eslint/naming-convention -- GitHub's API names this key.
+          { ...protectReleaseTags, bypass_actors: [] }
+        : protectReleaseTags,
+    ),
     environmentSetting(base),
     ...(repository.isTemplate ? [] : [variableSetting(base)]),
   ];
@@ -468,8 +475,12 @@ const resultOf = async (
     return !isSuccess(response);
   });
   if (typeof failure !== "undefined") {
+    const errors = valueAt(failure.data, "errors");
     return {
-      detail: `HTTP ${String(failure.status)}: ${String(valueAt(failure.data, "message"))}`,
+      detail: [
+        `HTTP ${String(failure.status)}: ${String(valueAt(failure.data, "message"))}`,
+        ...(Array.isArray(errors) ? errors.map(String) : []),
+      ].join(". "),
       name: setting.name,
       state: "failed",
     };

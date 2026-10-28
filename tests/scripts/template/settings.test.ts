@@ -199,6 +199,19 @@ describe("the comparison of settings", () => {
     ]);
   });
 
+  it("let nobody create the release tags of a template repository", () => {
+    const tags = sharedSettings({ ...repository, isTemplate: true }).find(
+      (setting) => {
+        return setting.name === 'Ruleset "Protect release tags"';
+      },
+    );
+
+    expect(valueAt(tags?.expected, "bypass_actors")).toEqual([]);
+    expect(valueAt(tags?.expected, "rules")).toContainEqual({
+      type: "creation",
+    });
+  });
+
   it("leave the homepage of a template repository alone", () => {
     const [merge] = sharedSettings({ ...repository, isTemplate: true });
 
