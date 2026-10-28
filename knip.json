@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["scripts/template/*.ts"],
+  "project": ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}", "!tests/fixtures/**"],
+  "treatConfigHintsAsErrors": true
+}

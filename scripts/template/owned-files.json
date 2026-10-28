@@ -1,0 +1,42 @@
+{
+  "intended": {
+    "cravingmaker/prettier-config": [
+      ".github/workflows/dependabot-auto-merge.yml"
+    ]
+  },
+  "owned": [
+    ".editorconfig",
+    ".gitattributes",
+    ".github/CODEOWNERS",
+    ".github/workflows/dependabot-auto-merge.yml",
+    ".github/workflows/pins.yml",
+    ".github/workflows/publish.yml",
+    ".github/workflows/release-please.yml",
+    ".github/workflows/scorecard.yml",
+    ".github/workflows/zizmor.yml",
+    ".gitignore",
+    ".husky/pre-commit",
+    ".husky/pre-push",
+    ".npmrc",
+    ".nvmrc",
+    "CODING_PRINCIPLES.md",
+    "LICENSE",
+    "release-please-config.json",
+    "scripts/actionlint-reference.json",
+    "scripts/actionlint.ts",
+    "scripts/check-pins.ts",
+    "scripts/check-workflows.ts",
+    "scripts/pins/versions.ts",
+    "tests/repository/files.test.ts",
+    "tests/repository/package.test.ts",
+    "tests/repository/versions.test.ts",
+    "tests/repository/workflows.test.ts",
+    "tests/scripts/check-pins.test.ts",
+    "tests/scripts/workflow-tool.test.ts",
+    "tests/support/consumer.test.ts",
+    "tests/support/consumer.ts",
+    "tests/support/peers.test.ts",
+    "tests/support/peers.ts",
+    "tsdown.config.ts"
+  ]
+}

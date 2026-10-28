@@ -1,0 +1,122 @@
+{
+  "name": "@cravingmaker/package-template",
+  "version": "0.0.0",
+  "private": false,
+  "description": "Craving Maker's template for ESM-only TypeScript packages",
+  "keywords": [
+    "cravingmaker",
+    "template",
+    "typescript"
+  ],
+  "homepage": "https://github.com/cravingmaker/package-template#readme",
+  "bugs": {
+    "url": "https://github.com/cravingmaker/package-template/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cravingmaker/package-template.git"
+  },
+  "funding": "https://github.com/sponsors/cravingmaker",
+  "license": "MIT",
+  "author": "cravingmaker (https://github.com/cravingmaker)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsdown",
+    "clean": "node --input-type=module --eval \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\"",
+    "deps:inspect": "node-modules-inspector --no-open",
+    "deps:inspect:build": "node-modules-inspector build --outDir node_modules/.cache/node-modules-inspector-build",
+    "deps:report-duplicates": "node-modules-inspector report duplicates",
+    "deps:report-sizes": "node-modules-inspector report sizes",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:inspect": "eslint-config-inspector --no-open",
+    "lint:inspect:build": "eslint-config-inspector build --outDir node_modules/.cache/eslint-config-inspector",
+    "lint:package": "npm run build && npm run lint:package:built",
+    "lint:package:built": "publint --strict",
+    "lint:staged": "lint-staged",
+    "lint:unused": "knip && knip --production",
+    "lint:workflows": "node scripts/check-workflows.ts",
+    "prepare": "husky",
+    "prepublishOnly": "npm run release:check",
+    "release:check": "npm audit --audit-level=low && npm run validate && npm pack --dry-run --ignore-scripts",
+    "test": "vitest run --exclude \"tests/package/**\"",
+    "test:package": "npm run build && npm run test:package:built",
+    "test:package:built": "vitest run tests/package",
+    "test:package:ui": "npm run build && vitest --ui --watch tests/package",
+    "test:ui": "vitest --ui --watch --exclude \"tests/package/**\"",
+    "test:watch": "vitest --exclude \"tests/package/**\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:package": "npm run build && npm run typecheck:package:built",
+    "typecheck:package:built": "attw --pack . --profile esm-only",
+    "validate": "npm run validate:static && npm test && npm run test:package:built",
+    "validate:static": "npm run format:check && npm run typecheck && npm run lint:unused && npm run lint && npm run lint:workflows && npm run build && npm run lint:package:built && npm run typecheck:package:built"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,jsx,mjsx,ts,mts,tsx,mtsx,svelte,html,md,json,jsonc,json5}": [
+      "eslint --fix --max-warnings 0 --no-warn-ignored",
+      "prettier --ignore-unknown --write"
+    ],
+    "!(*.js|*.mjs|*.cjs|*.jsx|*.mjsx|*.ts|*.mts|*.tsx|*.mtsx|*.svelte|*.html|*.md|*.json|*.jsonc|*.json5)": "prettier --ignore-unknown --write"
+  },
+  "prettier": "@cravingmaker/prettier-config",
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "micromark-extension-math@3.1.0": {
+      "katex": "0.18.2"
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@cravingmaker/eslint-config": "0.2.0",
+    "@cravingmaker/prettier-config": "0.3.2",
+    "@eslint/config-inspector": "3.5.0",
+    "@types/node": "24.19.2",
+    "@vitest/eslint-plugin": "1.6.27",
+    "@vitest/ui": "5.0.5",
+    "eslint": "10.12.0",
+    "husky": "9.1.7",
+    "knip": "6.41.0",
+    "lint-staged": "17.6.0",
+    "node-modules-inspector": "2.7.0",
+    "prettier": "3.9.10",
+    "publint": "0.3.25",
+    "tsdown": "0.23.1",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5",
+    "yaml": "2.9.1"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.15.0",
+      "onFail": "error"
+    },
+    "runtime": {
+      "name": "node",
+      "onFail": "error",
+      "version": ">=24.15.0"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

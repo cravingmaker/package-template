@@ -1,0 +1,38 @@
+name: Pins
+
+on:
+  schedule:
+    - cron: "0 2 * * 6" # Weekly, Saturdays 09:00 Asia/Jakarta
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  # Dependabot updates neither .nvmrc, nor the actionlint pins, nor the zizmor version input.
+  pins:
+    name: Hand-maintained pins
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up development Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      # The check uses Node.js built-ins only, so nothing is installed.
+      - name: Compare the pins with their newest releases
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/check-pins.ts
