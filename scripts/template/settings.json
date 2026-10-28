@@ -8,6 +8,18 @@
     "query_suite": "extended",
     "state": "configured"
   },
+  "codeScanningRule": {
+    "parameters": {
+      "code_scanning_tools": [
+        {
+          "alerts_threshold": "errors",
+          "security_alerts_threshold": "high_or_higher",
+          "tool": "CodeQL"
+        }
+      ]
+    },
+    "type": "code_scanning"
+  },
   "environment": {
     "deployment_branch_policy": {
       "custom_branch_policies": true,
@@ -41,8 +53,12 @@
   },
   "securityAndAnalysis": {
     "security_and_analysis": {
-      "secret_scanning": { "status": "enabled" },
-      "secret_scanning_push_protection": { "status": "enabled" }
+      "secret_scanning": {
+        "status": "enabled"
+      },
+      "secret_scanning_push_protection": {
+        "status": "enabled"
+      }
     }
   },
   "workflowToken": {
