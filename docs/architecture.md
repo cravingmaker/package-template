@@ -15,6 +15,21 @@ The template's [owned-files.json](https://github.com/cravingmaker/package-templa
 
 [@cravingmaker/eslint-config](https://github.com/cravingmaker/eslint-config) and [@cravingmaker/prettier-config](https://github.com/cravingmaker/prettier-config) hold the lint and format policy. A repository adds only what concerns its own files: `eslint.config.js` names its fixtures and its test rules, and `package.json` references the Prettier config. A rule change that every repository needs belongs in the shared config, not in the copies.
 
+## Decisions
+
+These choices were made on purpose. Change one only for a reason that outweighs the one given here.
+
+- **`npm test` runs offline.** It leaves out the packed-consumer tests, so the pre-push hook needs no build and no registry, and stays fast under load. `npm run validate`, `release:check`, and CI run the packed consumers.
+- **Contributors use the newest LTS release of Node.js; consumers get the floor.** `.nvmrc` pins Node.js 26.13.0, the first LTS release of Node.js 26, and `engines` stays at 24.15.0. CI tests the floor and the newest release of each supported line.
+- **Every release waits for approval.** The publishing job stages the tarball, and a maintainer approves it on npmjs.com with two-factor authentication, so a compromised workflow cannot publish on its own. The job that can publish runs no dependency code, in an environment that only `v*` tags reach, and only the release app creates those tags.
+- **Installs come from the registry only.** `.npmrc` refuses git and remote-tarball dependencies, which bypass the release-age policy, the signatures, and the provenance. npm 12 does the same by default.
+- **Shared files are copies, checked for drift.** Reusable workflows, or a bot that syncs the files, would need a token that can change the workflows of every repository. With four or more repositories, reusable workflows become worth it.
+- **macOS runs the packed consumers.** Its temporary directory is a symbolic link, which Linux runners do not show.
+- **No coverage threshold.** The behavior tests carry the evidence, and a threshold invites tests written for the number.
+- **TypeScript stays on 6.0** until typescript-eslint accepts TypeScript 7.
+- **Markdown keeps each paragraph on one line,** because GitHub renders a line break inside a paragraph as a break in pull requests, issues, and releases.
+- **The workflow runs of every outside contributor need approval,** not only those of first-time contributors.
+
 ## Change recipes
 
 ### A shared file

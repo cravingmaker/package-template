@@ -17,6 +17,7 @@ const files = [
   "AGENTS.md",
   "CONTRIBUTING.md",
   "README.md",
+  "ROADMAP.md",
   "knip.json",
   "package-lock.json",
   "package.json",
@@ -71,6 +72,10 @@ describe("the removal of template blocks", () => {
     );
   });
 
+  it("ends the text with one newline when a block ends it", () => {
+    expect(removeTemplateBlocks(`Before.\n\n${block}\n`)).toBe("Before.\n");
+  });
+
   it("fails on a block without an end", () => {
     expect(() => {
       return removeTemplateBlocks(block.split("\n\n<!--", 1)[0] ?? "");
@@ -122,7 +127,7 @@ describe("the initialization of a new package", () => {
 });
 
 describe("the cleanup of a new package", () => {
-  it("removes the template tools, their Knip entry, and the template block of AGENTS.md", async () => {
+  it("removes the template tools, their Knip entry, and the template blocks of AGENTS.md and ROADMAP.md", async () => {
     const workspace = await initializeCopy(identity);
 
     await expect(
@@ -133,6 +138,7 @@ describe("the cleanup of a new package", () => {
     ).rejects.toThrow("ENOENT");
     expect(await readText(workspace, "knip.json")).not.toContain("entry");
     expect(await readText(workspace, "AGENTS.md")).not.toContain("template:");
+    expect(await readText(workspace, "ROADMAP.md")).not.toContain("template:");
   });
 
   it("writes files that Prettier leaves unchanged", async () => {
