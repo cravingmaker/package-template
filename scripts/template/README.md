@@ -8,7 +8,7 @@ These tools exist only in the template. `init.ts` removes this directory, with `
 node scripts/template/init.ts --name <name> --description "<one sentence>"
 ```
 
-Run it once in a new repository made from the template, after `npm ci`. It renames the package to `@cravingmaker/<name>` in `package.json`, the lockfile, the README, `AGENTS.md`, and `CONTRIBUTING.md`. It sets the description in `package.json` and as the README's introduction, adds the npm badge, and removes the `<!-- template:start -->` blocks, the Knip entry of the tools, and the tools themselves.
+Run it once in a new repository made from the template, after `npm ci`. It renames the package to `@cravingmaker/<name>` in `package.json`, the lockfile, the README, `AGENTS.md`, `CONTRIBUTING.md`, and `ROADMAP.md`. It sets the description in `package.json` and as the README's introduction, adds the npm badge, and removes the `<!-- template:start -->` blocks, the Knip entry of the tools, and the tools themselves.
 
 ## `configure-repository.ts`
 

@@ -170,6 +170,17 @@ const rejectingGitHub: Requester = async ({ method }) => {
     : { data: { message: "Must have admin rights" }, status: 403 };
 };
 
+// The rules of the "Protect main" ruleset that the shared settings expect.
+const mainRules = (isTemplate: boolean): readonly unknown[] => {
+  const rules = valueAt(
+    sharedSettings({ ...repository, isTemplate }).find((setting) => {
+      return setting.name === 'Ruleset "Protect main"';
+    })?.expected,
+    "rules",
+  );
+  return Array.isArray(rules) ? rules : [];
+};
+
 const settingNames = (isTemplate: boolean): readonly string[] => {
   return sharedSettings({ ...repository, isTemplate }).map((setting) => {
     return setting.name;
@@ -197,19 +208,6 @@ describe("the comparison of settings", () => {
       "eslint",
       "typescript",
     ]);
-  });
-
-  it("let nobody create the release tags of a template repository", () => {
-    const tags = sharedSettings({ ...repository, isTemplate: true }).find(
-      (setting) => {
-        return setting.name === 'Ruleset "Protect release tags"';
-      },
-    );
-
-    expect(valueAt(tags?.expected, "bypass_actors")).toEqual([]);
-    expect(valueAt(tags?.expected, "rules")).toContainEqual({
-      type: "creation",
-    });
   });
 
   it("leave the homepage of a template repository alone", () => {
@@ -315,5 +313,29 @@ describe("the identity of a repository", () => {
         data: { description: "Chosen by hand." },
       },
     );
+  });
+});
+
+describe("the rulesets of a template repository", () => {
+  it("require CodeQL results to merge, as a trial", () => {
+    expect(mainRules(true)).toContainEqual(
+      expect.objectContaining({ type: "code_scanning" }),
+    );
+    expect(mainRules(false)).not.toContainEqual(
+      expect.objectContaining({ type: "code_scanning" }),
+    );
+  });
+
+  it("let nobody create the release tags of a template repository", () => {
+    const tags = sharedSettings({ ...repository, isTemplate: true }).find(
+      (setting) => {
+        return setting.name === 'Ruleset "Protect release tags"';
+      },
+    );
+
+    expect(valueAt(tags?.expected, "bypass_actors")).toEqual([]);
+    expect(valueAt(tags?.expected, "rules")).toContainEqual({
+      type: "creation",
+    });
   });
 });

@@ -19,6 +19,7 @@ type Texts = {
   readonly lockfile: string;
   readonly manifest: string;
   readonly readme: string;
+  readonly roadmap: string;
 };
 
 const templateSlug = "cravingmaker/package-template";
@@ -51,11 +52,11 @@ const fail = (message: string): never => {
 };
 
 /**
- * `text` without its template blocks: each `<!-- template:start -->` with everything up to the next `<!-- template:end -->`.
+ * `text` without its template blocks: each `<!-- template:start -->` with everything up to the next `<!-- template:end -->`. The text keeps one blank line between paragraphs and ends with one newline.
  */
 const removeTemplateBlocks = (text: string): string => {
   const [head = "", ...blocks] = text.split(startMarker);
-  return [
+  const kept = [
     head,
     ...blocks.map((block) => {
       const end = block.indexOf(endMarker);
@@ -63,9 +64,8 @@ const removeTemplateBlocks = (text: string): string => {
         ? fail("A template block has no end marker.")
         : block.slice(end + endMarker.length);
     }),
-  ]
-    .join("")
-    .replaceAll(/\n{3,}/gu, "\n\n");
+  ].join("");
+  return `${kept.replaceAll(/\n{3,}/gu, "\n\n").trimEnd()}\n`;
 };
 
 /**
@@ -191,6 +191,10 @@ const planOutputs = (
           "CONTRIBUTING.md",
           renameRepository(texts.contributing, identity.name),
         ],
+        [
+          "ROADMAP.md",
+          removeTemplateBlocks(renameRepository(texts.roadmap, identity.name)),
+        ],
       ]
     : fail(
         "Give a lowercase package name, such as my-package, and a one-line description.",
@@ -211,6 +215,7 @@ const initialize = async (
     readme = "",
     agents = "",
     contributing = "",
+    roadmap = "",
   ] = await Promise.all(
     [
       "package.json",
@@ -219,12 +224,13 @@ const initialize = async (
       "README.md",
       "AGENTS.md",
       "CONTRIBUTING.md",
+      "ROADMAP.md",
     ].map(async (file) => {
       return await readFile(new URL(file, directory), "utf8");
     }),
   );
   const outputs = planOutputs(
-    { agents, contributing, knip, lockfile, manifest, readme },
+    { agents, contributing, knip, lockfile, manifest, readme, roadmap },
     identity,
   );
 

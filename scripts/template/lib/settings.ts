@@ -428,7 +428,16 @@ const sharedSettings = (
     ...securitySettings(base),
     ...actionsSettings(base),
     featureSetting("Immutable releases", `${base}/immutable-releases`),
-    rulesetSetting(base, protectMain),
+    rulesetSetting(
+      base,
+      // The trial of code scanning results as a merge rule runs in the template first; see ROADMAP.md. Its rule sorts first by type.
+      repository.isTemplate
+        ? {
+            ...protectMain,
+            rules: [settings.codeScanningRule, ...protectMain.rules],
+          }
+        : protectMain,
+    ),
     rulesetSetting(
       base,
       // GitHub accepts the release app as a bypass actor only where it is installed. A template has no app and never releases, so nobody creates its tags.
